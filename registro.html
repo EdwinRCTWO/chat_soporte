@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}INNOVA - Registro{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h1 class="titulo-principal">INNOVA</h1>
+        <h2 class="titulo-secundario">CREAR CUENTA</h2>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('registro') }}" class="login-form">
+            <input type="text" name="nombre" class="input-field" placeholder="Nombre completo" required>
+            <input type="email" name="email" class="input-field" placeholder="Correo electrónico" required>
+            <input type="password" name="contrasena" class="input-field" placeholder="Contraseña" required>
+            <button type="submit" class="btn-primary">Registrarse</button>
+        </form>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">¿Ya tienes cuenta?</p>
+            <a href="{{ url_for('login') }}" class="btn-secondary">Iniciar sesión</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

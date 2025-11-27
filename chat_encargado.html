@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Encargado - INNOVA{% endblock %}
+
+{% block content %}
+<div class="panel-container">
+    <!-- Lista de atenciones -->
+    <div class="lista-atenciones">
+        <div class="lista-header">
+            <h3>Atenciones Activas</h3>
+            <span class="badge">{{ atenciones|length }}</span>
+            <div style="margin-top: 15px;">
+                <a href="{{ url_for('historial') }}" style="font-size: 14px; color: #666;">Ver historial</a>
+                <span style="margin: 0 10px; color: #ddd;">|</span>
+                <a href="{{ url_for('logout') }}" style="font-size: 14px; color: #666;">Salir</a>
+            </div>
+        </div>
+        
+        <div class="atenciones-lista">
+            {% if not atenciones %}
+            <div style="padding: 40px 20px; text-align: center; color: #999;">
+                <p>No hay atenciones activas</p>
+            </div>
+            {% endif %}
+            
+            {% for atencion in atenciones %}
+            <div class="atencion-item {% if atencion_actual and atencion.id == atencion_actual.id %}activa{% endif %}"
+                 onclick="window.location.href='{{ url_for('ver_atencion', atencion_id=atencion.id) }}'">
+                <h4>{{ atencion.usuario.nombre }}</h4>
+                <p>{{ atencion.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Área del chat -->
+    <div class="chat-area">
+        {% if atencion_actual %}
+        <div class="header-atencion">
+            <div class="info-usuario">
+                <h3>{{ atencion_actual.usuario.nombre }}</h3>
+                <p>{{ atencion_actual.usuario.email }} • Iniciado: {{ atencion_actual.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+            <button class="btn-cerrar" onclick="cerrarAtencion({{ atencion_actual.id }})">
+                Cerrar Atención
+            </button>
+        </div>
+        
+        <div class="chat-mensajes" id="mensajes">
+            {% for mensaje in mensajes %}
+            <div class="mensaje {% if mensaje.es_encargado %}enviado{% else %}recibido{% endif %}" data-id="{{ mensaje.id }}">
+                <div class="mensaje-contenido">
+                    <p>{{ mensaje.mensaje }}</p>
+                    <span class="hora">{{ mensaje.fecha.strftime('%H:%M') }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="input-mensaje" placeholder="Escribe tu respuesta..." 
+                   onkeypress="if(event.key==='Enter') enviarMensaje()">
+            <button onclick="enviarMensaje()">Enviar</button>
+        </div>
+        {% else %}
+        <div class="sin-seleccion">
+            <p>Selecciona una atención para ver la conversación</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>const soyEncargado = true;</script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+    {% if atencion_actual %}
+    initChat({{ atencion_actual.id }}, {{ mensajes[-1].id if mensajes else 0 }});
+    {% endif %}
+
+    function cerrarAtencion(id) {
+        if (!confirm('¿Cerrar esta atención?')) return;
+        fetch(`/api/cerrar-atencion/${id}`, {method: 'POST'})
+            .then(() => window.location.href = '{{ url_for("panel_encargado") }}');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Usuario - INNOVA{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <h3>Soporte INNOVA</h3>
+        <a href="{{ url_for('logout') }}" style="font-size: 14px; color: #666;">Salir</a>
+    </div>
+
+    <div class="chat-mensajes" id="mensajes">
+        {% for mensaje in mensajes %}
+        <div class="mensaje {% if mensaje.es_encargado %}recibido{% else %}enviado{% endif %}" data-id="{{ mensaje.id }}">
+            <div class="mensaje-contenido">
+                <p>{{ mensaje.mensaje }}</p>
+                <span class="hora">{{ mensaje.fecha.strftime('%H:%M') }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="input-mensaje" placeholder="Escribe tu mensaje..." 
+               onkeypress="if(event.key==='Enter') enviarMensaje()">
+        <button onclick="enviarMensaje()">Enviar</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>const soyEncargado = false;</script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+    initChat({{ atencion.id }}, {{ mensajes[-1].id if mensajes else 0 }});
+</script>
+{% endblock %}

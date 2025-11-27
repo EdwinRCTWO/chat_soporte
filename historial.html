@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Atenciones - INNOVA{% endblock %}
+
+{% block content %}
+<div class="historial-container">
+    <div class="historial-header">
+        <h2>Historial de Atenciones</h2>
+        <p style="color: #666; margin-top: 5px;">Registro de todas las atenciones realizadas</p>
+        <div style="margin-top: 15px;">
+            <a href="{{ url_for('panel_encargado') }}" style="color: #000; text-decoration: none;">← Volver al panel</a>
+        </div>
+    </div>
+
+    <!-- Formulario de filtros -->
+    <div class="filtros" style="margin: 20px 0;">
+        <form method="get" action="{{ url_for('historial') }}" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="nombre" placeholder="Buscar por nombre"
+                   value="{{ filtro_nombre }}" style="padding: 6px; flex: 1;">
+            <select name="estado" style="padding: 6px;">
+                <option value="">Todos</option>
+                <option value="abierta" {% if filtro_estado=='abierta' %}selected{% endif %}>Abiertas</option>
+                <option value="cerrada" {% if filtro_estado=='cerrada' %}selected{% endif %}>Cerradas</option>
+            </select>
+            <button type="submit" style="padding: 6px 12px;">Filtrar</button>
+        </form>
+    </div>
+    
+    <div class="tabla-historial">
+        {% if atenciones %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for atencion in atenciones %}
+                <tr>
+                    <td>#{{ atencion.id }}</td>
+                    <td>{{ atencion.usuario.nombre }}</td>
+                    <td>{{ atencion.usuario.email }}</td>
+                    <td>{{ atencion.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <span class="estado-badge estado-{{ atencion.estado }}">
+                            {{ atencion.estado|capitalize }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="padding: 40px; text-align: center; color: #999;">
+            <p>No se encontraron atenciones con los filtros aplicados.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}INNOVA - Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h1 class="titulo-principal">INNOVA</h1>
+        <h2 class="titulo-secundario">INICIAR SESIÓN</h2>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <input type="email" name="email" class="input-field" placeholder="Usuario" required>
+            <input type="password" name="contrasena" class="input-field" placeholder="Contraseña" required>
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+        
+        <a href="#" class="link-recuperar">Olvidé mi contraseña</a>
+        
+        <p class="texto-legal">
+            By clicking continue, you agree to our 
+            <a href="#">Terms of Service</a> and 
+            <a href="#">Privacy Policy</a>
+        </p>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">¿No tienes cuenta?</p>
+            <a href="{{ url_for('registro') }}" class="btn-secondary">Crear cuenta</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
